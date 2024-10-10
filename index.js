@@ -1,24 +1,25 @@
-var compression = require('compression')
+const compression = require('compression');
 const express = require('express');
 const app = express();
-const http = require('http');
+
 app.use(compression());
 const port = 80;
 
-var AWS = require("aws-sdk");
+// If you need AWS SDK, import only the services you need
+const { S3Client } = require("@aws-sdk/client-s3");
 
-AWS.config.update({
+const s3Client = new S3Client({
     region: process.env.AWS_REGION
 });
 
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
+app.get('/', (req, res) => {
     res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello, World!');
+    res.send('Hello, World!');
 });
 
-
 app.listen(port, () => {
-    console.log(`app listening at ${port}`);
-    console.log(`working in region ${process.env.AWS_REGION}`)
+    console.log(`App listening at http://localhost:${port}`);
+    console.log(`Working in region ${process.env.AWS_REGION}`);
+}).on('error', (err) => {
+    console.error('Error starting server:', err);
 });
